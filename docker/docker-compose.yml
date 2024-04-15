@@ -1,0 +1,26 @@
+services:
+
+  hwa:
+    image: public.ecr.aws/unocha/hdx-hapi-write-app:${HWA_IMAGE_TAG:-main}
+    # build:
+    #   context: ./..
+    #   dockerfile: Dockerfile
+    hostname: hapi
+    working_dir: /srv/hapi
+    environment:
+      HAPI_DB_NAME: ${HAPI_DB_NAME:-hapi}
+      HAPI_DB_USER: ${HAPI_DB_USER:-hapi}
+      HAPI_DB_PASS: ${HAPI_DB_PASS:-hapi}
+      HAPI_DB_HOST: ${HAPI_DB_NAME:-db}
+      HAPI_DB_PORT: ${HAPI_DB_PORT:-5432}
+    volumes:
+      - "./..:/srv/hwa"
+    entrypoint: tail -f /dev/null
+    networks:
+      - hapi
+
+networks:
+  hapi:
+    name: hapi_stack_hapi
+    external: true
+      
