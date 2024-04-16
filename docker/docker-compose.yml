@@ -6,7 +6,7 @@ services:
     #   context: ./..
     #   dockerfile: Dockerfile
     hostname: hapi
-    working_dir: /srv/hapi
+    working_dir: /srv/hwa
     environment:
       HAPI_DB_NAME: ${HAPI_DB_NAME:-hapi}
       HAPI_DB_USER: ${HAPI_DB_USER:-hapi}
@@ -18,6 +18,21 @@ services:
     entrypoint: tail -f /dev/null
     networks:
       - hapi
+
+  db:
+    image: postgres:15.4-alpine3.18
+    hostname: db
+    ports:
+      - "127.0.0.1:45432:5432"
+    volumes:
+      - "${BASEDIR:-./postgres-data}/dbs/hwa-psql:/var/lib/pgsql"
+    environment:
+      PGDATA: /var/lib/pgsql
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    networks:
+      - hapi
+    profiles:
+      - testing
 
 networks:
   hapi:

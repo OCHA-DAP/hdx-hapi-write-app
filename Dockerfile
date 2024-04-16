@@ -14,7 +14,7 @@ RUN apk add \
         python3-dev && \
     mkdir -p \
         /etc/services.d/hapi \
-        /var/log/hapi && \
+        /var/log/hwa && \
     pip3 --no-cache-dir install --upgrade \
         pip \
         wheel && \
