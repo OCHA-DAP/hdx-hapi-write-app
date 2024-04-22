@@ -3,10 +3,9 @@ import os
 import logging
 
 
-from logging import Logger
+from typing import List
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
-from typing import List
 
 from hdx_hwa.config.config import get_config
 
@@ -15,12 +14,14 @@ SAMPLE_DATA_SQL_FILE = 'tests/data/sample_data.sql'
 
 
 def pytest_sessionstart(session):
-    os.environ['HAPI_DB_NAME'] =  'hwa_test'
+    os.environ['HAPI_DB_NAME'] = 'hwa_test'
+    os.environ['HWA_PATCH_REPO_URL'] = 'https://api.github.com/repos/alexandru-m-g/test-hdx-hapi-write-app-patches'
 
 
 @pytest.fixture(scope='session')
 def log():
     return logging.getLogger(__name__)
+
 
 @pytest.fixture(scope='session')
 def session_maker() -> sessionmaker[Session]:
@@ -32,13 +33,11 @@ def session_maker() -> sessionmaker[Session]:
 
 
 @pytest.fixture(scope='session')
-def list_of_db_tables(log: Logger, session_maker: sessionmaker[Session]) -> List[str]:
+def list_of_db_tables(log: logging.Logger, session_maker: sessionmaker[Session]) -> List[str]:
     # log.info('Getting list of db tables')
     session = session_maker()
     try:
-        result = session.execute(
-            text('SELECT tablename FROM pg_tables WHERE schemaname = \'public\'')
-        )
+        result = session.execute(text("SELECT tablename FROM pg_tables WHERE schemaname = 'public'"))
         return [row[0] for row in result if row != 'alembic_version']
     except Exception as e:
         raise e
@@ -47,7 +46,7 @@ def list_of_db_tables(log: Logger, session_maker: sessionmaker[Session]) -> List
 
 
 @pytest.fixture(scope='function')
-def clear_db_tables(log: Logger, session_maker: sessionmaker[Session], list_of_db_tables: List[str]):
+def clear_db_tables(log: logging.Logger, session_maker: sessionmaker[Session], list_of_db_tables: List[str]):
     log.info('Clearing database')
     db_session = session_maker()
     try:
@@ -63,7 +62,7 @@ def clear_db_tables(log: Logger, session_maker: sessionmaker[Session], list_of_d
 
 
 @pytest.fixture(scope='function')
-def populate_test_data(log: Logger, session_maker: sessionmaker[Session]):
+def populate_test_data(log: logging.Logger, session_maker: sessionmaker[Session]):
     log.info('Populating with test data')
     db_session = session_maker()
     try:
@@ -84,3 +83,10 @@ def populate_test_data(log: Logger, session_maker: sessionmaker[Session]):
 def refresh_db(clear_db_tables, populate_test_data):
     pass
 
+
+@pytest.fixture(scope='function')
+def use_test_patch_discovery_branch():
+    original_value = get_config().HWA_PATCH_BRANCH_NAME
+    get_config().HWA_PATCH_BRANCH_NAME = 'test-patch-discovery'
+    yield
+    get_config().HWA_PATCH_BRANCH_NAME = original_value

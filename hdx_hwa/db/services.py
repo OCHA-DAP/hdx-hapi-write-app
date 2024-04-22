@@ -8,18 +8,20 @@ from hdx_hwa.config.config import Config
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class CurrentState:
     last_sequence_number: int
     last_patch_date: datetime
 
-def get_current_status(config: Config) -> CurrentState:
-    logger.info('Getting current status')   
+
+def get_latest_executed_patch(config: Config) -> CurrentState:
+    logger.info('Getting current status')
     return None
 
 
 def create_or_update_patch(config: Config, discovered_patch):
-    logger.info('Creating or updating patch')   
+    logger.info('Creating or updating patch')
     return None
 
 
