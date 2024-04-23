@@ -251,3 +251,21 @@ INSERT INTO public.humanitarian_needs (id, resource_ref, admin2_ref, population_
 INSERT INTO public.humanitarian_needs (id, resource_ref, admin2_ref, population_status_code, population_group_code, sector_code, gender_code, age_range_code, disabled_marker, population, reference_period_start, reference_period_end, source_data) VALUES (3, 3, 4, 'inneed', 'refugees', NULL, NULL, '80+', NULL, 300, '2017-01-01 00:00:00', '2024-12-31 23:59:59', 'not yet implemented');
 
 -- end
+
+-- ---------------------------------------------------------------------
+-- Sample data for the patch table.
+--
+-- Started 2024-04-23
+-- ------------------------------------------------------------------------
+
+INSERT INTO patch (id,patch_sequence_number,commit_hash,commit_date,patch_path,permanent_download_url,state)
+VALUES
+(1, 1,'66e7e589a1224a1832ba7360817dda7a7d9313cf','2023-01-01T00:00:00','2024/01','https://github.com/OCHA-DAP/hapi-patch-repo/blob/66e7e589a1224a1832ba7360817dda7a7d9313cf/2024/01/hapi_patch_10_hno.json,executed'),
+(2, 2,'554f18a92cf6a23a14e0f29356a6dec150f651ff','2023-01-02T00:00:00','2024/01','https://github.com/OCHA-DAP/hapi-patch-repo/blob/554f18a92cf6a23a14e0f29356a6dec150f651ff/2024/01/hapi_patch_10_hno.json,failed'),
+(3, 3,'35ea27da009e5add8d8d227e02fd2c4bbcc84b76','2023-01-03T00:00:00','2024/01','https://github.com/OCHA-DAP/hapi-patch-repo/blob/35ea27da009e5add8d8d227e02fd2c4bbcc84b76/2024/01/hapi_patch_10_hno.json,discovered');
+
+-- end
+
+
+
+
