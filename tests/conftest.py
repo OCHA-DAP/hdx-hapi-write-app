@@ -11,8 +11,6 @@ from hdx_hwa.config.config import get_config
 
 from hapi_schema.utils.base import Base
 
-from hapi_schema.db_patch import DBPatch
-
 
 SAMPLE_DATA_SQL_FILE = 'tests/data/sample_data.sql'
 
