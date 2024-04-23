@@ -7,7 +7,6 @@ import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 
-from hapi_schema.utils.base import Base
 from hdx_hwa.config.config import get_config
 
 
@@ -28,7 +27,6 @@ def session_maker() -> sessionmaker[Session]:
     engine = create_engine(
         get_config().SQL_ALCHEMY_PSYCOPG2_DB_URI,
     )
-    # print(get_config().SQL_ALCHEMY_PSYCOPG2_DB_URI, flush=True)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     return SessionLocal
 
@@ -67,7 +65,9 @@ def populate_test_data(log: logging.Logger, session_maker: sessionmaker[Session]
     log.info('Populating with test data')
     db_session = session_maker()
 
-    sql_table_creation_code = """CREATE TABLE public.patch (
+    sql_table_creation_code = '''
+    DROP TABLE public.patch;
+    CREATE TABLE public.patch (
             id int4 NOT NULL,
             patch_sequence_number int4 NOT NULL,
             commit_hash varchar NOT NULL,
@@ -75,11 +75,11 @@ def populate_test_data(log: logging.Logger, session_maker: sessionmaker[Session]
             patch_path varchar NOT NULL,
             permanent_download_url varchar NOT NULL,
             state varchar NOT NULL
-        );"""
-    sql_patch_sequence_number_index_creation = """
+        );'''
+    sql_patch_sequence_number_index_creation = '''
         CREATE INDEX ix_patch_patch_sequence_number ON patch (patch_sequence_number)
-        """
-    sql_state_index_creation = """CREATE INDEX ix_patch_state ON patch (state)"""
+        '''
+    sql_state_index_creation = '''CREATE INDEX ix_patch_state ON patch (state)'''
     db_session.execute(text(sql_table_creation_code))
     db_session.execute(text(sql_patch_sequence_number_index_creation))
     db_session.execute(text(sql_state_index_creation))
