@@ -9,6 +9,10 @@ from sqlalchemy.orm import sessionmaker, Session
 
 from hdx_hwa.config.config import get_config
 
+from hapi_schema.utils.base import Base
+
+from hapi_schema.db_patch import DBPatch
+
 
 SAMPLE_DATA_SQL_FILE = 'tests/data/sample_data.sql'
 
@@ -63,26 +67,11 @@ def clear_db_tables(log: logging.Logger, session_maker: sessionmaker[Session], l
 @pytest.fixture(scope='function')
 def populate_test_data(log: logging.Logger, session_maker: sessionmaker[Session]):
     log.info('Populating with test data')
+    engine = create_engine(
+        get_config().SQL_ALCHEMY_PSYCOPG2_DB_URI,
+    )
+    Base.metadata.create_all(engine)
     db_session = session_maker()
-
-    sql_table_creation_code = '''
-    DROP TABLE public.patch;
-    CREATE TABLE public.patch (
-            id int4 NOT NULL,
-            patch_sequence_number int4 NOT NULL,
-            commit_hash varchar NOT NULL,
-            commit_date date NOT NULL,
-            patch_path varchar NOT NULL,
-            permanent_download_url varchar NOT NULL,
-            state varchar NOT NULL
-        );'''
-    sql_patch_sequence_number_index_creation = '''
-        CREATE INDEX ix_patch_patch_sequence_number ON patch (patch_sequence_number)
-        '''
-    sql_state_index_creation = '''CREATE INDEX ix_patch_state ON patch (state)'''
-    db_session.execute(text(sql_table_creation_code))
-    db_session.execute(text(sql_patch_sequence_number_index_creation))
-    db_session.execute(text(sql_state_index_creation))
 
     try:
         with open(SAMPLE_DATA_SQL_FILE, 'r') as file:
