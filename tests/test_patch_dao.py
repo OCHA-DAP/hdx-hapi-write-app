@@ -54,6 +54,7 @@ def test_insert_new_patch_failure_integrity(log: logging.Logger, session_maker: 
 def test_insert_new_patch_success(log: logging.Logger, session_maker: sessionmaker[Session]):
     session = session_maker()
     new_patch = DBPatch(
+        id=None,
         patch_sequence_number=4,
         commit_hash='554f18a92cf6a23a14e0f29356a6dec150f651gg',
         commit_date=datetime.datetime(2023, 1, 4),
