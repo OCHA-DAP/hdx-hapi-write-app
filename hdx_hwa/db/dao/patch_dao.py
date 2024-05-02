@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 # find last executed patch → executed patch with highest sequence number
 
 
-def get_patch_by_id(id: int, db: Session = None) -> list[DBPatch]:
+def get_patch_by_id(id: int, db: Session = None) -> DBPatch:
     db = get_db_connection(db)
     query = select(DBPatch)
     query = query.where(DBPatch.id == id)
@@ -29,7 +29,7 @@ def get_patch_by_id(id: int, db: Session = None) -> list[DBPatch]:
     logger.debug(f'Executing SQL query: {query}')
     logger.info(f'Retrieved {len(patch_data)} rows from the database')
 
-    return patch_data
+    return patch_data[0]
 
 
 def get_highest_sequence_number(db: Session) -> int:
@@ -44,12 +44,23 @@ def get_highest_sequence_number(db: Session) -> int:
     return sequence_number[0]
 
 
+def get_most_recent_patch(db: Session) -> DBPatch:
+    db = get_db_connection(db)
+    query = select(DBPatch).order_by(DBPatch.execution_date.desc()).where(DBPatch.execution_date.is_not(None))
+    result = db.execute(query).scalars().all()
+    most_recent = result[0]
+
+    logger.debug(f'Executing SQL query: {query}')
+    logger.info(f'Got result {most_recent} rows from the database')
+
+    return most_recent
+
+
 def get_db_connection(db: Session) -> Session:
     if db is None:
         engine = create_engine(
             get_config().SQL_ALCHEMY_PSYCOPG2_DB_URI,
         )
-        # print(get_config().SQL_ALCHEMY_PSYCOPG2_DB_URI, flush=True)
         db = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
     return db
