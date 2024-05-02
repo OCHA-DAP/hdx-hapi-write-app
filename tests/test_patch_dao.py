@@ -8,6 +8,7 @@ from hdx_hwa.db.dao.patch_dao import (
     get_highest_sequence_number,
     get_most_recent_patch,
     insert_new_patch,
+    get_next_patch_to_execute,
 )
 
 
@@ -15,7 +16,6 @@ def test_get_patch_by_id(log: logging.Logger, session_maker: sessionmaker[Sessio
     session = session_maker()
     result = get_patch_by_id(1, db=session)
 
-    assert len(result) == 1
     assert result.id == 1
     assert result.commit_hash == '66e7e589a1224a1832ba7360817dda7a7d9313cf'
 
@@ -67,3 +67,11 @@ def test_insert_new_patch_success(log: logging.Logger, session_maker: sessionmak
     assert status == 'success'
     result = get_highest_sequence_number(db=session)
     assert result == 4
+
+
+def test_get_next_patch_to_execute(log: logging.Logger, session_maker: sessionmaker[Session]):
+    session = session_maker()
+    result = get_next_patch_to_execute(db=session)
+
+    assert result.patch_sequence_number == 2
+    assert result.state == StateEnum.failed

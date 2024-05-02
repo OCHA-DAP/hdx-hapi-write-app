@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from hdx_hwa.config.config import get_config
 
 
-from hapi_schema.db_patch import DBPatch
+from hapi_schema.db_patch import DBPatch, StateEnum
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +52,24 @@ def get_most_recent_patch(db: Session) -> DBPatch:
 
     logger.debug(f'Executing SQL query: {query}')
     logger.info(f'Got result {most_recent} rows from the database')
+
+    return most_recent
+
+
+def get_next_patch_to_execute(db: Session) -> DBPatch:
+    db = get_db_connection(db)
+    query = (
+        select(DBPatch)
+        .order_by(DBPatch.patch_sequence_number.asc())
+        .where(DBPatch.state == StateEnum.discovered or DBPatch.state == StateEnum.failed)
+    )
+    result = db.execute(query).scalars().all()
+    most_recent = None
+    if result is not None and len(result) == 1:
+        most_recent = result[0]
+
+    print(f'Executing SQL query: {query}', flush=True)
+    print(f'Got result {most_recent} rows from the database', flush=True)
 
     return most_recent
 
