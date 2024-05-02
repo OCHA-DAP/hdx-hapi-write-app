@@ -56,6 +56,21 @@ def get_most_recent_patch(db: Session) -> DBPatch:
     return most_recent
 
 
+def insert_new_patch(patch: DBPatch, db: Session) -> str:
+    status = 'success'
+
+    try:
+        db.add(patch)
+        db.commit()
+        db.close()
+    except sqlalchemy.orm.exc.UnmappedInstanceError:
+        status = 'failure: wrong type'
+    except sqlalchemy.exc.IntegrityError:
+        status = 'failure: integrity error'
+
+    return status
+
+
 def get_db_connection(db: Session) -> Session:
     if db is None:
         engine = create_engine(
