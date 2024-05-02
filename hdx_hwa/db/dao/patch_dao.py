@@ -90,7 +90,10 @@ def get_last_executed_patch(db: Session) -> DBPatch:
 
 def insert_new_patch(patch: DBPatch, db: Session) -> str:
     status = 'success'
-
+    try:
+        patch.id = None
+    except AttributeError:
+        pass
     try:
         db.add(patch)
         db.commit()
