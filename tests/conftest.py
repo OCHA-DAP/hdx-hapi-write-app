@@ -4,13 +4,18 @@ from typing import List
 
 import pytest
 
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, insert
 from sqlalchemy.orm import sessionmaker, Session
 
-from hdx_hwa.config.config import get_config
 
 from hapi_schema.utils.base import Base
+from hapi_schema.db_age_range import DBAgeRange
+from hapi_schema.db_patch import DBPatch
 
+from .sample_data.data_age_range import data_age_range
+from .sample_data.data_patch import data_patch
+
+from hdx_hwa.config.config import get_config
 
 SAMPLE_DATA_SQL_FILE = 'tests/data/sample_data.sql'
 
@@ -46,7 +51,7 @@ def list_of_db_tables(log: logging.Logger, session_maker: sessionmaker[Session])
         session.close()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='session')
 def clear_db_tables(log: logging.Logger, session_maker: sessionmaker[Session], list_of_db_tables: List[str]):
     log.info('Clearing database')
     db_session = session_maker()
@@ -62,7 +67,7 @@ def clear_db_tables(log: logging.Logger, session_maker: sessionmaker[Session], l
         db_session.close()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='session')
 def populate_test_data(log: logging.Logger, session_maker: sessionmaker[Session]):
     log.info('Populating with test data')
     engine = create_engine(
@@ -71,20 +76,12 @@ def populate_test_data(log: logging.Logger, session_maker: sessionmaker[Session]
     Base.metadata.create_all(engine)
     db_session = session_maker()
 
-    try:
-        with open(SAMPLE_DATA_SQL_FILE, 'r') as file:
-            sql_commands = file.read()
-            db_session.execute(text(sql_commands))
-            db_session.commit()
-            log.info('Test data inserted successfully')
-    except Exception as e:
-        log.error(f'Error while inserting test data: {str(e).splitlines()[0]}')
-        db_session.rollback()
-        raise e
-    finally:
-        db_session.close()
+    db_session.execute(insert(DBAgeRange), data_age_range)
+    db_session.execute(insert(DBPatch), data_patch)
+
+    db_session.commit()
 
 
-@pytest.fixture(scope='function', autouse=True)
+@pytest.fixture(scope='session', autouse=True)
 def refresh_db(clear_db_tables, populate_test_data):
     pass
