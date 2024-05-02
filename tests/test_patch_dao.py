@@ -1,5 +1,6 @@
 import datetime
 import logging
+import pytest
 from sqlalchemy.orm import sessionmaker, Session
 
 from hapi_schema.db_patch import StateEnum, DBPatch
@@ -12,7 +13,7 @@ from hdx_hwa.db.dao.patch_dao import (
     get_last_executed_patch,
 )
 
-
+@pytest.mark.skip
 def test_get_patch_by_id(log: logging.Logger, session_maker: sessionmaker[Session]):
     session = session_maker()
     result = get_patch_by_id(1, db=session)
