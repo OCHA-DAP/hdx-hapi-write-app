@@ -9,6 +9,7 @@ from hdx_hwa.db.dao.patch_dao import (
     get_most_recent_patch,
     insert_new_patch,
     get_next_patch_to_execute,
+    get_last_executed_patch,
 )
 
 
@@ -75,3 +76,11 @@ def test_get_next_patch_to_execute(log: logging.Logger, session_maker: sessionma
 
     assert result.patch_sequence_number == 2
     assert result.state == StateEnum.failed
+
+
+def test_get_last_executed_patch(log: logging.Logger, session_maker: sessionmaker[Session]):
+    session = session_maker()
+    result = get_last_executed_patch(db=session)
+
+    assert result.patch_sequence_number == 1
+    assert result.state == StateEnum.executed
