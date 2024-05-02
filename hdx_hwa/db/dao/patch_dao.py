@@ -97,8 +97,8 @@ def insert_new_patch(patch: DBPatch, db: Session) -> str:
         db.close()
     except sqlalchemy.orm.exc.UnmappedInstanceError:
         status = 'failure: wrong type'
-    except sqlalchemy.exc.IntegrityError:
-        status = 'failure: integrity error'
+    # except sqlalchemy.exc.IntegrityError:
+    #     status = 'failure: integrity error'
 
     return status
 
