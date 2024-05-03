@@ -88,22 +88,21 @@ def get_last_executed_patch(db: Session) -> DBPatch:
     return most_recent
 
 
-def insert_new_patch(patch: DBPatch, db: Session) -> str:
+def insert_new_patch(patch: DBPatch, db: Session) -> tuple[str, int]:
     status = 'success'
-    try:
-        patch.id = None
-    except AttributeError:
-        pass
+    inserted_id = None
     try:
         db.add(patch)
         db.commit()
+        db.refresh(patch)
         db.close()
+        inserted_id = patch.id
     except sqlalchemy.orm.exc.UnmappedInstanceError:
         status = 'failure: wrong type'
     except sqlalchemy.exc.IntegrityError:
         status = 'failure: integrity error'
 
-    return status
+    return status, inserted_id
 
 
 def get_db_connection(db: Session) -> Session:

@@ -13,14 +13,6 @@ from hdx_hwa.db.dao.patch_dao import (
 )
 
 
-def test_get_patch_by_id(log: logging.Logger, session_maker: sessionmaker[Session]):
-    session = session_maker()
-    result = get_patch_by_id(1, db=session)
-
-    assert result.id == 1
-    assert result.commit_hash == '66e7e589a1224a1832ba7360817dda7a7d9313cf'
-
-
 def test_get_highest_sequence_number(log: logging.Logger, session_maker: sessionmaker[Session]):
     session = session_maker()
     result = get_highest_sequence_number(db=session)
@@ -38,7 +30,7 @@ def test_get_most_recent_patch(log: logging.Logger, session_maker: sessionmaker[
 
 def test_insert_new_patch_failure_type(log: logging.Logger, session_maker: sessionmaker[Session]):
     session = session_maker()
-    status = insert_new_patch(1, db=session)
+    status, _ = insert_new_patch(1, db=session)
 
     assert status == 'failure: wrong type'
 
@@ -46,7 +38,7 @@ def test_insert_new_patch_failure_type(log: logging.Logger, session_maker: sessi
 def test_insert_new_patch_failure_integrity(log: logging.Logger, session_maker: sessionmaker[Session]):
     session = session_maker()
     new_patch = DBPatch()
-    status = insert_new_patch(new_patch, db=session)
+    status, _ = insert_new_patch(new_patch, db=session)
 
     assert status == 'failure: integrity error'
 
@@ -54,7 +46,6 @@ def test_insert_new_patch_failure_integrity(log: logging.Logger, session_maker: 
 def test_insert_new_patch_success(log: logging.Logger, session_maker: sessionmaker[Session]):
     session = session_maker()
     new_patch = DBPatch(
-        id=None,
         patch_sequence_number=4,
         commit_hash='554f18a92cf6a23a14e0f29356a6dec150f651gg',
         commit_date=datetime.datetime(2023, 1, 4),
@@ -64,11 +55,14 @@ def test_insert_new_patch_success(log: logging.Logger, session_maker: sessionmak
         patch_permalink_url='https://github.com/OCHA-DAP/hapi-patch-repo/blob/554f18a92cf6a23a14e0f29356a6dec150f651ff/2024/01/hapi_patch_4_hno.json',
         state=StateEnum.discovered,
     )
-    status = insert_new_patch(new_patch, db=session)
+    status, inserted_id = insert_new_patch(new_patch, db=session)
 
     assert status == 'success'
     result = get_highest_sequence_number(db=session)
     assert result == 4
+
+    result = get_patch_by_id(inserted_id, db=session)
+    assert result.commit_hash == '554f18a92cf6a23a14e0f29356a6dec150f651gg'
 
 
 def test_get_next_patch_to_execute(log: logging.Logger, session_maker: sessionmaker[Session]):
