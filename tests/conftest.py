@@ -11,12 +11,12 @@ from hapi_schema.utils.base import Base
 from hapi_schema.db_age_range import DBAgeRange
 from hapi_schema.db_patch import DBPatch
 
-from .sample_data.data_age_range import data_age_range
-from .sample_data.data_patch import data_patch
+from tests.sample_data.data_age_range import data_age_range
+from tests.sample_data.data_patch import data_patch
 
 from hdx_hwa.config.config import get_config
 
-SAMPLE_DATA_SQL_FILE = 'tests/data/sample_data.sql'
+# SAMPLE_DATA_SQL_FILE = 'tests/data/sample_data.sql'
 
 
 def pytest_sessionstart(session):
@@ -36,6 +36,7 @@ def session_maker() -> sessionmaker[Session]:
     )
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     return SessionLocal
+
 
 @pytest.fixture(scope='function')
 def db_session(session_maker: sessionmaker[Session]) -> Generator[Session, None, None]:
