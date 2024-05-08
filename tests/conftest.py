@@ -96,6 +96,6 @@ def refresh_db(clear_db_tables, populate_test_data):
 @pytest.fixture(scope='function')
 def use_test_patch_discovery_branch():
     original_value = get_config().HWA_PATCH_BRANCH_NAME
-    get_config().HWA_PATCH_BRANCH_NAME = 'test-patch-discovery'
+    get_config().HWA_PATCH_BRANCH_NAME = 'test-full-csv-patches'
     yield
     get_config().HWA_PATCH_BRANCH_NAME = original_value

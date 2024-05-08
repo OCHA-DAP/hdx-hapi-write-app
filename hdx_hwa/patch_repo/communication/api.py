@@ -1,6 +1,8 @@
-from typing import Dict, List
 import requests
 
+from datetime import datetime, timezone
+from typing import Dict, List, Tuple
+from dateutil.parser import parse as dateutil_parse
 from hdx_hwa.config.config import get_config
 
 
@@ -14,15 +16,17 @@ def _get_api_headers() -> Dict:
     }
 
 
-def get_latest_commit_on_branch() -> str:
+def get_latest_commit_hash_and_date_on_branch() -> Tuple[str, datetime]:
     url = f'{CONFIG.HWA_PATCH_REPO_URL}/branches/{CONFIG.HWA_PATCH_BRANCH_NAME}'
     headers = _get_api_headers()
     response: requests.Response = requests.get(url, headers=headers)
     response.raise_for_status()
     data = response.json()
-
+    timestamp = dateutil_parse(data['commit']['commit']['committer']['date'])
+    if timestamp.tzinfo:
+        timestamp = timestamp.astimezone(timezone.utc).replace(tzinfo=None)
     latest_commit_hash = data['commit']['sha']
-    return latest_commit_hash
+    return latest_commit_hash, timestamp
 
 
 def get_content_list_from_commit_folder(commit_hash: str, folder: str, only_files: bool) -> List[Dict]:
@@ -41,18 +45,12 @@ def get_content_list_from_commit_folder(commit_hash: str, folder: str, only_file
     response.raise_for_status()
     data = response.json()
 
-    response_list = []
-
     type = 'file' if only_files else 'dir'
-    # content_list = data['files']
-    for content in data:
-        if content['type'] == type:
-            response_list.append(
-                {
-                    'name': content['name'],
-                    'patch_path': content['path'],
-                    'permanent_download_url': content['download_url'],
-                    'size': content['size'],
-                }
-            )
-    return response_list
+
+    return [c for c in data if c['type'] == type]
+
+
+def download_file_content_from_github(url: str) -> str:
+    response: requests.Response = requests.get(url)
+    response.raise_for_status()
+    return response.text.strip()

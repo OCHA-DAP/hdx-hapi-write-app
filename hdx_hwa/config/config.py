@@ -13,6 +13,7 @@ class Config:
     SQL_ALCHEMY_PSYCOPG2_DB_URI: str
     HWA_PATCH_REPO_URL: str
     HWA_PATCH_BRANCH_NAME: str
+    HWA_PATCH_FOLDER: str
     HWA_PATCH_TOKEN: str
 
 
@@ -32,6 +33,7 @@ def get_config() -> Config:
             ),
             HWA_PATCH_BRANCH_NAME=os.getenv('HWA_PATCH_BRANCH_NAME', 'main'),
             HWA_PATCH_TOKEN=os.getenv('HWA_PATCH_TOKEN', None),
+            HWA_PATCH_FOLDER=os.getenv('HWA_PATCH_FOLDER', 'database/csv'),
         )
 
     return CONFIG
