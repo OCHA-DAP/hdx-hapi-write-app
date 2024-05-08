@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 _CONFIG = get_config()
 
 
-def discover_patches() -> List[Patch]:
+def discover_patches_from_repo() -> List[Patch]:
     logger.info('Discovering patches')
     patch_discoverer = PatchDiscoverer(_CONFIG.HWA_PATCH_FOLDER)
     patch_discoverer.create_hash_to_target_name_map()
