@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import List
+from typing import Generator, List
 
 import pytest
 
@@ -37,8 +37,14 @@ def session_maker() -> sessionmaker[Session]:
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     return SessionLocal
 
+@pytest.fixture(scope='function')
+def db_session(session_maker: sessionmaker[Session]) -> Generator[Session, None, None]:
+    session = session_maker()
+    yield session
+    session.close()
 
-@pytest.fixture(scope='session')
+
+@pytest.fixture(scope='function')
 def list_of_db_tables(log: logging.Logger, session_maker: sessionmaker[Session]) -> List[str]:
     # log.info('Getting list of db tables')
     session = session_maker()
@@ -51,7 +57,7 @@ def list_of_db_tables(log: logging.Logger, session_maker: sessionmaker[Session])
         session.close()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def clear_db_tables(log: logging.Logger, session_maker: sessionmaker[Session], list_of_db_tables: List[str]):
     log.info('Clearing database')
     db_session = session_maker()
@@ -67,7 +73,7 @@ def clear_db_tables(log: logging.Logger, session_maker: sessionmaker[Session], l
         db_session.close()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='function')
 def populate_test_data(log: logging.Logger, session_maker: sessionmaker[Session]):
     log.info('Populating with test data')
     engine = create_engine(
@@ -82,6 +88,6 @@ def populate_test_data(log: logging.Logger, session_maker: sessionmaker[Session]
     db_session.commit()
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope='function', autouse=True)
 def refresh_db(clear_db_tables, populate_test_data):
     pass
