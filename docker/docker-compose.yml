@@ -13,6 +13,7 @@ services:
       HAPI_DB_PASS: ${HAPI_DB_PASS:-hapi}
       HAPI_DB_HOST: ${HAPI_DB_NAME:-db}
       HAPI_DB_PORT: ${HAPI_DB_PORT:-5432}
+      HWA_PATCH_TOKEN: ${HWA_PATCH_TOKEN}
     volumes:
       - "./..:/srv/hwa"
     entrypoint: tail -f /dev/null
