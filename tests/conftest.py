@@ -7,21 +7,21 @@ import pytest
 from sqlalchemy import create_engine, text, insert
 from sqlalchemy.orm import sessionmaker, Session
 
-
 from hapi_schema.utils.base import Base
 from hapi_schema.db_age_range import DBAgeRange
 from hapi_schema.db_patch import DBPatch
 
-from .sample_data.data_age_range import data_age_range
-from .sample_data.data_patch import data_patch
+from tests.sample_data.data_age_range import data_age_range
+from tests.sample_data.data_patch import data_patch
 
 from hdx_hwa.config.config import get_config
 
-SAMPLE_DATA_SQL_FILE = 'tests/data/sample_data.sql'
+# SAMPLE_DATA_SQL_FILE = 'tests/data/sample_data.sql'
 
 
 def pytest_sessionstart(session):
     os.environ['HAPI_DB_NAME'] = 'hwa_test'
+    os.environ['HWA_PATCH_REPO_URL'] = 'https://api.github.com/repos/alexandru-m-g/test-hdx-hapi-write-app-patches'
 
 
 @pytest.fixture(scope='session')
@@ -36,6 +36,7 @@ def session_maker() -> sessionmaker[Session]:
     )
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     return SessionLocal
+
 
 @pytest.fixture(scope='function')
 def db_session(session_maker: sessionmaker[Session]) -> Generator[Session, None, None]:
@@ -91,3 +92,11 @@ def populate_test_data(log: logging.Logger, session_maker: sessionmaker[Session]
 @pytest.fixture(scope='function', autouse=True)
 def refresh_db(clear_db_tables, populate_test_data):
     pass
+
+
+@pytest.fixture(scope='function')
+def use_test_patch_discovery_branch():
+    original_value = get_config().HWA_PATCH_BRANCH_NAME
+    get_config().HWA_PATCH_BRANCH_NAME = 'test-full-csv-patches'
+    yield
+    get_config().HWA_PATCH_BRANCH_NAME = original_value
