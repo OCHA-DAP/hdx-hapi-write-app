@@ -12,6 +12,7 @@ select = [
     "E", 
     "F", 
     "Q", 
+    "INP001",
 ]
 extend-ignore = [
     "Q003", # avoidable-escaped-quote
