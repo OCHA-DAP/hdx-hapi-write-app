@@ -1,5 +1,6 @@
 import datetime
 import logging
+import sqlalchemy
 from sqlalchemy.orm import Session
 
 from hapi_schema.db_patch import StateEnum, DBPatch
@@ -27,16 +28,19 @@ def test_get_most_recent_patch(log: logging.Logger, db_session: Session):
 
 
 def test_insert_new_patch_failure_type(log: logging.Logger, db_session: Session):
-    status, _ = insert_new_patch(1, db=db_session)
+    status = insert_new_patch(1, db=db_session)
 
     assert status == 'failure: wrong type'
 
 
 def test_insert_new_patch_failure_integrity(log: logging.Logger, db_session: Session):
     new_patch = DBPatch()
-    status, _ = insert_new_patch(new_patch, db=db_session)
-
-    assert status == 'failure: integrity error'
+    try:
+        insert_new_patch(new_patch, db=db_session)
+        db_session.commit()
+        assert False
+    except sqlalchemy.exc.IntegrityError:
+        assert True
 
 
 def test_insert_new_patch_success(log: logging.Logger, db_session: Session):
@@ -50,7 +54,9 @@ def test_insert_new_patch_success(log: logging.Logger, db_session: Session):
         patch_permalink_url='https://github.com/OCHA-DAP/hapi-patch-repo/blob/554f18a92cf6a23a14e0f29356a6dec150f651ff/2024/01/hapi_patch_4_hno.json',
         state=StateEnum.discovered,
     )
-    status, inserted_id = insert_new_patch(new_patch, db=db_session)
+    status = insert_new_patch(new_patch, db=db_session)
+    db_session.commit()
+    inserted_id = new_patch.id
 
     assert status == 'success'
     result = get_highest_sequence_number(db=db_session)
