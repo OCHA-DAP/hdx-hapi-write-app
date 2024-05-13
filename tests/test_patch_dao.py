@@ -74,7 +74,29 @@ def test_get_next_patch_to_execute(log: logging.Logger, db_session: Session):
 
 
 def test_get_last_executed_patch(log: logging.Logger, db_session: Session):
-    result = get_last_executed_patch(db=db_session)
+    last_seq_number = get_highest_sequence_number(db=db_session) or 0
+    seq_number = last_seq_number + 1
 
-    assert result.patch_sequence_number == 1
-    assert result.state == StateEnum.executed
+    operational_presence_patch = DBPatch(
+        patch_sequence_number=seq_number,
+        commit_hash='9dd5e045113d3e4ccacc7ba06336d2b3a6d26333',
+        commit_date=datetime.datetime(2024, 5, 2, 10, 31, 11),
+        patch_path='database/csv/operational_presence_view.csv.gz',
+        patch_target='operational_presence',
+        patch_hash='fa6286902e8caed163757871e1c82fc2',
+        patch_permalink_url='https://raw.githubusercontent.com/alexandru-m-g/test-hdx-hapi-write-app-patches/9dd5e045113d3e4ccacc7ba06336d2b3a6d26333/database/csv/operational_presence_view.csv.gz',
+        state='executed',
+        execution_date=datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None),
+    )
+    insert_new_patch(operational_presence_patch, db=db_session)
+    db_session.commit()
+
+    last_executed_patch = get_last_executed_patch(db=db_session)
+
+    assert last_executed_patch.patch_sequence_number == seq_number
+    assert last_executed_patch.state == StateEnum.executed
+
+    last_hn_executed_patch = get_last_executed_patch(db=db_session, patch_target='humanitarian_needs')
+
+    assert last_hn_executed_patch.patch_sequence_number == 1
+    assert last_hn_executed_patch.state == StateEnum.executed

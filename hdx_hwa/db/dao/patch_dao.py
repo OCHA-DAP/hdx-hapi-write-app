@@ -27,9 +27,7 @@ def get_patch_by_id(id: int, db: Session = None) -> DBPatch:
 def get_highest_sequence_number(db: Session) -> int:
     query = select(sqlalchemy.func.max(DBPatch.patch_sequence_number))
     result = db.execute(query)
-    sequence_number = result.scalars().all()
-    if sequence_number is not None and len(sequence_number) == 1:
-        sequence_number = sequence_number[0]
+    sequence_number = result.scalar()
 
     logger.debug(f'Executing SQL query: {query}')
     logger.info(f'Got result {sequence_number} rows from the database')
@@ -67,17 +65,16 @@ def get_next_patch_to_execute(db: Session) -> DBPatch:
     return most_recent
 
 
-def get_last_executed_patch(db: Session) -> DBPatch:
+def get_last_executed_patch(db: Session, patch_target: str = None) -> DBPatch:
     query = select(DBPatch).order_by(DBPatch.execution_date.desc()).where(DBPatch.state == StateEnum.executed)
-    result = db.execute(query).scalars().all()
-    most_recent = None
-    if result is not None and len(result) == 1:
-        most_recent = result[0]
+    if patch_target:
+        query = query.where(DBPatch.patch_target == patch_target)
+    result = db.execute(query).scalar()
 
     logger.debug(f'Executing SQL query: {query}')
-    logger.info(f'Got result {most_recent} rows from the database')
+    logger.info(f'Got result {result} rows from the database')
 
-    return most_recent
+    return result
 
 
 def insert_new_patch(patch: DBPatch, db: Session) -> str:

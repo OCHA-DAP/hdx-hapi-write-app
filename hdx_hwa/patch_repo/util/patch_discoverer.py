@@ -25,13 +25,13 @@ class PatchDiscoverer:
                 content = download_file_content_from_github(file['download_url'])
                 if content:
                     hash = content.strip().split(' ')[0]
-                    key = file['name'].replace('.hash', '')
+                    key = file['name'].replace('.hash', '').replace('_view', '')
                     self.hash_to_target_name_map[key] = hash
 
     def create_target_name_to_patch_map(self) -> Dict[str, Patch]:
         for file in self.raw_files:
             if file['name'].endswith('.csv.gz'):
-                target = file['name'].replace('.csv.gz', '')
+                target = file['name'].replace('.gz', '').replace('.csv', '').replace('_view', '')
                 patch = Patch(
                     patch_target=target,
                     patch_path=f'{self.folder}/{file["name"]}',
@@ -40,4 +40,4 @@ class PatchDiscoverer:
                     commit_hash=self.commit_hash,
                     commit_date=self.commit_date,
                 )
-                self.target_name_to_patch_map[file['name']] = patch
+                self.target_name_to_patch_map[target] = patch
