@@ -21,6 +21,10 @@ def process():
                         f'and commit hash {discovered_patch.commit_hash}'
                     )
                     execute_patch(discovered_patch)
+                    logger.info(
+                        f'Finished loading data for {discovered_patch.patch_target} '
+                        f'and commit hash {discovered_patch.commit_hash}'
+                    )
                 else:
                     logger.info(
                         f'Patch data for {discovered_patch.patch_target} is already loaded. '

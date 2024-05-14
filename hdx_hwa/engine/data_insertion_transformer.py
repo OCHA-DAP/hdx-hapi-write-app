@@ -1,5 +1,4 @@
-from datetime import datetime, timezone
-from dateutil.parser import parse as dateutil_parse
+from datetime import datetime
 from typing import Any, Dict, List
 
 
@@ -15,10 +14,7 @@ class DataInsertionTransformer:
     def _transform_string_to_datetime(self, value: str) -> datetime:
         value = value.strip()
         if value:
-            timestamp = dateutil_parse(value)
-            if timestamp.tzinfo:
-                timestamp = timestamp.astimezone(timezone.utc).replace(tzinfo=None)
-            return timestamp
+            return value
         else:
             return None
 

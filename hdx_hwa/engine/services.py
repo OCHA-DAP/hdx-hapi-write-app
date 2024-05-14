@@ -32,7 +32,7 @@ def execute_patch(patch_metadata: Patch, row_limit: int = None):
                 break
             row_dict = transformer.row_to_dict(row)
             batch.append(row_dict)
-            if len(batch) == 1000:
+            if len(batch) == 10000:
                 insert_batch_into_table(table, batch)
                 batch = []
 
@@ -41,4 +41,5 @@ def execute_patch(patch_metadata: Patch, row_limit: int = None):
             insert_batch_into_table(table, batch)
 
         create_new_patch_in_db(patch_metadata, True)
+        logger.info(f'Before committing {patch_metadata.patch_target}')
         commit_db_changes()
