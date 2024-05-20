@@ -1,4 +1,4 @@
-FROM public.ecr.aws/unocha/python:3
+FROM public.ecr.aws/unocha/python:3-base
 
 WORKDIR /srv/hapi
 
@@ -6,7 +6,7 @@ COPY . .
 
 RUN apk add \
         postgresql-dev \
-        unit \ 
+        unit \
         unit-python3 && \
     apk --virtual .build-deps add \
         git \
@@ -23,4 +23,6 @@ RUN apk add \
     apk del .build-deps && \
     rm -rf /var/lib/apk/* && rm -r /root/.cache
 
-EXPOSE 5000
+ENTRYPOINT /usr/bin/python
+
+CMD []
