@@ -1,10 +1,7 @@
 import logging
 import sqlalchemy
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session
 from sqlalchemy import select
-
-from sqlalchemy import create_engine
-from hdx_hwa.config.config import get_config
 
 
 from hapi_schema.db_patch import DBPatch, StateEnum
@@ -13,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 def get_patch_by_id(id: int, db: Session = None) -> DBPatch:
-    db = get_db_connection(db)
     query = select(DBPatch)
     query = query.where(DBPatch.id == id)
     result = db.execute(query)
@@ -29,12 +25,9 @@ def get_patch_by_id(id: int, db: Session = None) -> DBPatch:
 
 
 def get_highest_sequence_number(db: Session) -> int:
-    db = get_db_connection(db)
     query = select(sqlalchemy.func.max(DBPatch.patch_sequence_number))
     result = db.execute(query)
-    sequence_number = result.scalars().all()
-    if sequence_number is not None and len(sequence_number) == 1:
-        sequence_number = sequence_number[0]
+    sequence_number = result.scalar()
 
     logger.debug(f'Executing SQL query: {query}')
     logger.info(f'Got result {sequence_number} rows from the database')
@@ -43,7 +36,6 @@ def get_highest_sequence_number(db: Session) -> int:
 
 
 def get_most_recent_patch(db: Session) -> DBPatch:
-    db = get_db_connection(db)
     query = select(DBPatch).order_by(DBPatch.execution_date.desc()).where(DBPatch.execution_date.is_not(None))
     result = db.execute(query).scalars().all()
     most_recent = None
@@ -57,7 +49,6 @@ def get_most_recent_patch(db: Session) -> DBPatch:
 
 
 def get_next_patch_to_execute(db: Session) -> DBPatch:
-    db = get_db_connection(db)
     query = (
         select(DBPatch)
         .order_by(DBPatch.patch_sequence_number.asc())
@@ -74,42 +65,23 @@ def get_next_patch_to_execute(db: Session) -> DBPatch:
     return most_recent
 
 
-def get_last_executed_patch(db: Session) -> DBPatch:
-    db = get_db_connection(db)
+def get_last_executed_patch(db: Session, patch_target: str = None) -> DBPatch:
     query = select(DBPatch).order_by(DBPatch.execution_date.desc()).where(DBPatch.state == StateEnum.executed)
-    result = db.execute(query).scalars().all()
-    most_recent = None
-    if result is not None and len(result) == 1:
-        most_recent = result[0]
+    if patch_target:
+        query = query.where(DBPatch.patch_target == patch_target)
+    result = db.execute(query).scalar()
 
     logger.debug(f'Executing SQL query: {query}')
-    logger.info(f'Got result {most_recent} rows from the database')
+    logger.info(f'Got result {result} rows from the database')
 
-    return most_recent
+    return result
 
 
-def insert_new_patch(patch: DBPatch, db: Session) -> tuple[str, int]:
+def insert_new_patch(patch: DBPatch, db: Session) -> str:
     status = 'success'
-    inserted_id = None
     try:
         db.add(patch)
-        db.commit()
-        db.refresh(patch)
-        db.close()
-        inserted_id = patch.id
     except sqlalchemy.orm.exc.UnmappedInstanceError:
         status = 'failure: wrong type'
-    except sqlalchemy.exc.IntegrityError:
-        status = 'failure: integrity error'
 
-    return status, inserted_id
-
-
-def get_db_connection(db: Session) -> Session:
-    if db is None:
-        engine = create_engine(
-            get_config().SQL_ALCHEMY_PSYCOPG2_DB_URI,
-        )
-        db = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-    return db
+    return status

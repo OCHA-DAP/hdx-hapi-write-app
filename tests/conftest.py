@@ -5,12 +5,13 @@ from typing import Generator, List
 import pytest
 
 from sqlalchemy import create_engine, text, insert
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session
 
 from hapi_schema.utils.base import Base
 from hapi_schema.db_age_range import DBAgeRange
 from hapi_schema.db_patch import DBPatch
 
+from hdx_hwa.db.session_util import db_session as util_db_session
 from tests.sample_data.data_age_range import data_age_range
 from tests.sample_data.data_patch import data_patch
 
@@ -29,39 +30,31 @@ def log():
     return logging.getLogger(__name__)
 
 
-@pytest.fixture(scope='session')
-def session_maker() -> sessionmaker[Session]:
-    engine = create_engine(
-        get_config().SQL_ALCHEMY_PSYCOPG2_DB_URI,
-    )
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    return SessionLocal
+# @pytest.fixture(scope='session')
+# def session_maker() -> sessionmaker[Session]:
+#     return session_creator()
 
 
 @pytest.fixture(scope='function')
-def db_session(session_maker: sessionmaker[Session]) -> Generator[Session, None, None]:
-    session = session_maker()
-    yield session
-    session.close()
+def db_session() -> Generator[Session, None, None]:
+    with util_db_session() as session:
+        yield session
+    # session.close()
 
 
 @pytest.fixture(scope='function')
-def list_of_db_tables(log: logging.Logger, session_maker: sessionmaker[Session]) -> List[str]:
+def list_of_db_tables(log: logging.Logger, db_session: Session) -> List[str]:
     # log.info('Getting list of db tables')
-    session = session_maker()
     try:
-        result = session.execute(text("SELECT tablename FROM pg_tables WHERE schemaname = 'public'"))
+        result = db_session.execute(text("SELECT tablename FROM pg_tables WHERE schemaname = 'public'"))
         return [row[0] for row in result if row != 'alembic_version']
     except Exception as e:
         raise e
-    finally:
-        session.close()
 
 
 @pytest.fixture(scope='function')
-def clear_db_tables(log: logging.Logger, session_maker: sessionmaker[Session], list_of_db_tables: List[str]):
+def clear_db_tables(log: logging.Logger, db_session: Session, list_of_db_tables: List[str]):
     log.info('Clearing database')
-    db_session = session_maker()
     try:
         for table in list_of_db_tables:
             db_session.execute(text(f'TRUNCATE TABLE {table} CASCADE;'))
@@ -70,18 +63,15 @@ def clear_db_tables(log: logging.Logger, session_maker: sessionmaker[Session], l
         log.error(f'Error while clearing test data: {str(e).splitlines()[0]}')
         db_session.rollback()
         raise e
-    finally:
-        db_session.close()
 
 
 @pytest.fixture(scope='function')
-def populate_test_data(log: logging.Logger, session_maker: sessionmaker[Session]):
+def populate_test_data(log: logging.Logger, db_session: Session):
     log.info('Populating with test data')
     engine = create_engine(
         get_config().SQL_ALCHEMY_PSYCOPG2_DB_URI,
     )
     Base.metadata.create_all(engine)
-    db_session = session_maker()
 
     db_session.execute(insert(DBAgeRange), data_age_range)
     db_session.execute(insert(DBPatch), data_patch)

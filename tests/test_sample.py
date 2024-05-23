@@ -2,17 +2,14 @@ from logging import Logger
 
 from hapi_schema.db_age_range import DBAgeRange
 from sqlalchemy import select
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session
 
 
-def test_sample(log: Logger, session_maker: sessionmaker[Session]):
+def test_sample(log: Logger, db_session: Session):
     log.info('test_sample')
-    session = session_maker()
     try:
         query = select(DBAgeRange)
-        result = session.execute(query)
+        result = db_session.execute(query)
         assert len(result.scalars().all()) > 0
     except Exception as e:
         raise e
-    finally:
-        session.close()
