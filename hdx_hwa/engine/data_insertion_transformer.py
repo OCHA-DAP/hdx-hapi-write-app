@@ -19,17 +19,21 @@ class DataInsertionTransformer:
             return None
 
     def _transform_string_to_type(self, value: str, type: str) -> Any:
+        result = value
         if type == 'Boolean':
             if value == 'f':
-                return False
+                result = False
             elif value == 't':
-                return True
+                result = True
             else:
-                return None
+                result = None
         elif type == 'DateTime':
-            return self._transform_string_to_datetime(value)
-        else:
-            return value
+            result = self._transform_string_to_datetime(value)
+        elif type == 'Integer':
+            if len(value) == 0:
+                result = None  # Empty string should be treated as NULL for integer columns
+
+        return result
 
     def _compute_value(self, column_name: str, csv_row: List[str]) -> Any:
         value = csv_row[self.csv_column_name_to_index[column_name]]

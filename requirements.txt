@@ -3,4 +3,4 @@ psycopg2~=2.9.7
 requests~=2.31.0
 python-dateutil~=2.9.0
 
--e git+https://github.com/OCHA-DAP/hapi-sqlalchemy-schema@v0.7.4#egg=hapi-schema
+-e git+https://github.com/OCHA-DAP/hapi-sqlalchemy-schema@v0.8.12#egg=hapi-schema
