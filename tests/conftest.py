@@ -11,7 +11,7 @@ from hapi_schema.utils.base import Base
 
 from hapi_schema.db_patch import DBPatch
 from hapi_schema.db_sector import DBSector
-from hapi_schema.db_views_as_tables import DBNationalRiskVAT, DBOperationalPresenceVAT, DBLocationVAT
+from hapi_schema.db_views_as_tables import DBNationalRiskVAT, DBLocationVAT  # noqa
 
 from hdx_hwa.db.session_util import db_session as util_db_session
 
