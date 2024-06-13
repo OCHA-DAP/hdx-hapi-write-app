@@ -13,8 +13,9 @@ from hdx_hwa.engine.data_insertion_transformer import DataInsertionTransformer
 from hdx_hwa.patch_repo.types import Patch
 from hdx_hwa.patch_repo.util.csv_reader import read_rows_from_patch_repo
 
-
 logger = logging.getLogger(__name__)
+
+_BATCH = 10_000
 
 
 def execute_patch(patch_metadata: Patch, row_limit: int = None):
@@ -32,8 +33,9 @@ def execute_patch(patch_metadata: Patch, row_limit: int = None):
                 break
             row_dict = transformer.row_to_dict(row)
             batch.append(row_dict)
-            if len(batch) == 10000:
+            if len(batch) == _BATCH:
                 insert_batch_into_table(table, batch)
+                logger.info(f'Inserted {(i+1)/1000}k rows into {patch_metadata.patch_target}')
                 batch = []
 
         # Insert the remaining rows

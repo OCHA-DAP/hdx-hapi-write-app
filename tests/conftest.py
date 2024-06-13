@@ -4,18 +4,22 @@ from typing import Generator, List
 
 import pytest
 
-from sqlalchemy import create_engine, text, insert
+from sqlalchemy import Engine, MetaData, create_engine, inspect, text, insert
 from sqlalchemy.orm import Session
 
 from hapi_schema.utils.base import Base
-from hapi_schema.db_age_range import DBAgeRange
+
 from hapi_schema.db_patch import DBPatch
+from hapi_schema.db_sector import DBSector
+from hapi_schema.db_views_as_tables import DBNationalRiskVAT, DBLocationVAT  # noqa
 
 from hdx_hwa.db.session_util import db_session as util_db_session
-from tests.sample_data.data_age_range import data_age_range
-from tests.sample_data.data_patch import data_patch
 
 from hdx_hwa.config.config import get_config
+
+
+from tests.sample_data.data_sector import data_sector
+from tests.sample_data.data_patch import data_patch
 
 # SAMPLE_DATA_SQL_FILE = 'tests/data/sample_data.sql'
 
@@ -23,6 +27,30 @@ from hdx_hwa.config.config import get_config
 def pytest_sessionstart(session):
     os.environ['HAPI_DB_NAME'] = 'hwa_test'
     os.environ['HWA_PATCH_REPO_URL'] = 'https://api.github.com/repos/alexandru-m-g/test-hdx-hapi-write-app-patches'
+    engine = create_engine(
+        get_config().SQL_ALCHEMY_PSYCOPG2_DB_URI,
+    )
+    _drop_tables_and_views(engine)
+    _create_tables(engine)
+
+
+def _drop_tables_and_views(engine: Engine):
+    # drop views
+    inspector = inspect(engine)
+    views = inspector.get_view_names()
+    with engine.connect() as conn:
+        for view in views:
+            conn.execute(text(f'DROP VIEW IF EXISTS {view}'))
+            conn.commit()
+
+    # drop tables
+    metadata = MetaData()
+    metadata.reflect(bind=engine)
+    metadata.drop_all(bind=engine)
+
+
+def _create_tables(engine: Engine):
+    Base.metadata.create_all(engine)
 
 
 @pytest.fixture(scope='session')
@@ -73,7 +101,7 @@ def populate_test_data(log: logging.Logger, db_session: Session):
     )
     Base.metadata.create_all(engine)
 
-    db_session.execute(insert(DBAgeRange), data_age_range)
+    db_session.execute(insert(DBSector), data_sector)
     db_session.execute(insert(DBPatch), data_patch)
 
     db_session.commit()

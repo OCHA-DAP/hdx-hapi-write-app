@@ -8,17 +8,37 @@ from sqlalchemy import Table
 from hapi_schema.db_patch import DBPatch, StateEnum
 from hapi_schema.utils.base import Base
 
+# we need this imports so that sqlAlchemy knows about them
+from hapi_schema.db_views_as_tables import (
+    DBLocationVAT,  # noqa
+    DBAdmin1VAT,  # noqa
+    DBAdmin2VAT,  # noqa
+    DBConflictEventVAT,  # noqa
+    DBDatasetVAT,  # noqa
+    DBResourceVAT,  # noqa
+    DBOrgTypeVAT,  # noqa
+    DBOrgVAT,  # noqa
+    DBSectorVAT,  # noqa
+    DBOperationalPresenceVAT,  # noqa
+    DBNationalRiskVAT,  # noqa
+    DBPopulationVAT,  # noqa
+    DBHumanitarianNeedsVAT,  # noqa
+    DBPovertyRateVAT,  # noqa
+    DBWfpCommodityVAT,  # noqa
+    DBWfpMarketVAT,  # noqa
+    DBCurrencyVAT,  # noqa
+    DBFoodPriceVAT,  # noqa
+    DBFoodSecurityVAT,  # noqa
+    DBFundingVAT,  # noqa
+    DBRefugeesVAT,  # noqa
+)
+
 from hdx_hwa.db.dao.patch_dao import get_highest_sequence_number, get_last_executed_patch, insert_new_patch
 from hdx_hwa.db.dao.vat_dao import delete_all_data_from_table, insert_data_in_table
 from hdx_hwa.patch_repo.types import Patch
 
 
 from hdx_hwa.db.session_util import db_session, end_session
-
-# we need this imports (temporarily) so that sqlAlchemy knows about them
-from hdx_hwa.db.temp.db_operational_presence_vat import DBOperationalPresenceVAT  # noqa
-from hdx_hwa.db.temp.db_national_risk_vat import DBNationalRiskVAT  # noqa
-from hdx_hwa.db.temp.db_location_vat import DBLocationVAT  # noqa
 
 
 logger = logging.getLogger(__name__)
