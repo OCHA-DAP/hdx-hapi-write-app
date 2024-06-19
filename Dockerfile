@@ -19,6 +19,8 @@ RUN apk add \
     apk del .build-deps && \
     rm -rf /var/lib/apk/* && rm -r /root/.cache
 
+RUN ln -sf /usr/bin/python3 /usr/bin/python
+
 ENTRYPOINT /usr/bin/python
 
 CMD []
