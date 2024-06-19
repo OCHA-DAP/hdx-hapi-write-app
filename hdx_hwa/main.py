@@ -32,6 +32,7 @@ def process():
                     )
                     execute_patch(discovered_patch)
                     finished_loading_message = f'Finished loading data for {discovered_patch.patch_target} ' \
+                        f'from {discovered_patch.patch_permalink_url} ' \
                         f'and commit hash {discovered_patch.commit_hash}'
                     import_proces_timer.next(finished_loading_message)
                     slack_wrapper.post_to_slack_channel(finished_loading_message)
@@ -45,7 +46,9 @@ def process():
                         f'Commit hash: {discovered_patch.commit_hash}'
                     )
             except Exception as e:
-                message = f'Error while processing patch for target: {discovered_patch.patch_target}: {str(e)}'
+                message = f'Error while processing patch for target: {discovered_patch.patch_target}: ' \
+                    f'from {discovered_patch.patch_permalink_url} ' \
+                    f'{str(e)}'
                 logger.error(message)
                 slack_wrapper.post_to_slack_channel(message)
             finally:
