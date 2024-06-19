@@ -35,7 +35,7 @@ def get_config() -> Config:
             HWA_PATCH_REPO_URL=os.getenv(
                 'HWA_PATCH_REPO_URL', 'https://api.github.com/repos/OCHA-DAP/hdx-hapi-write-app-patches'
             ),
-            HWA_PATCH_BRANCH_NAME=os.getenv('HWA_PATCH_BRANCH_NAME', 'main'),
+            HWA_PATCH_BRANCH_NAME=os.getenv('HWA_PATCH_BRANCH_NAME', 'db-export'),
             HWA_PATCH_TOKEN=os.getenv('HWA_PATCH_TOKEN', None),
             HWA_PATCH_FOLDER=os.getenv('HWA_PATCH_FOLDER', 'database/csv'),
             HWA_SLACK_NOTIFICATION_CHANNEL=
