@@ -13,7 +13,7 @@ from hdx_hwa.patch_repo.types import Patch
 def test_execute_patch(use_test_patch_discovery_branch, db_session):
     db_session.execute(delete(DBPatch))
     patch = Patch(
-        patch_permalink_url='https://github.com/OCHA-DAP/hapi-pipelines-prod/raw/2d1c6975bdfcc2f0cc726b1c4be8ccffb6349d95/database/csv/national_risk_view.csv.gz',
+        patch_permalink_url='https://github.com/OCHA-DAP/hapi-pipelines-prod/raw/4614653ff2b6a79c47defd13dea9e28027550175/database/csv/national_risk_view.csv.gz',
         patch_target='national_risk',
         patch_path='national_risk_view.csv.gz',
         patch_hash='abcd1234',
