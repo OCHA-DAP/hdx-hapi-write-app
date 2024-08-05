@@ -1,25 +1,20 @@
-FROM public.ecr.aws/unocha/python:3-base
+FROM public.ecr.aws/unocha/python:3.12-stable
 
 WORKDIR /srv/hapi
 
 COPY . .
 
 RUN apk add \
-        postgresql-dev && \
+    postgresql-dev && \
     apk --virtual .build-deps add \
-        git \
-        build-base \
-        python3-dev && \
+    git \
+    build-base \
+    python3-dev && \
     mkdir -p \
-        /var/log/hwa && \
-    pip3 --no-cache-dir install --upgrade \
-        pip \
-        wheel && \
+    /var/log/hwa && \
     pip3 install --upgrade -r requirements.txt && \
     apk del .build-deps && \
     rm -rf /var/lib/apk/* && rm -r /root/.cache
-
-RUN ln -sf /usr/bin/python3 /usr/bin/python
 
 ENTRYPOINT /usr/bin/python
 
