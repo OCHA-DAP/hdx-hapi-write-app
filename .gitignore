@@ -1,5 +1,5 @@
 .idea
-
+src/
 docker/.ssh/*
 docker/.env
 docker/postgres-data
