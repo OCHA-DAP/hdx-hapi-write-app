@@ -11,6 +11,12 @@
             "program": "start.py",
             "console": "integratedTerminal",
             "justMyCode": true,
+            "env": {
+                "HWA_PATCH_REPO_URL": "https://api.github.com/repos/OCHA-DAP/hapi-pipelines",
+                "HWA_PATCH_BRANCH_NAME": "db-export",
+                "HWA_PATCH_TOKEN": "",
+            }
         }
+        
     ]
 }
