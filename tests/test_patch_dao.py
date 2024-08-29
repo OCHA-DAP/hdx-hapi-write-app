@@ -24,7 +24,7 @@ def test_get_most_recent_patch(log: logging.Logger, db_session: Session):
     result = get_most_recent_patch(db=db_session)
 
     assert result.state == StateEnum.failed
-    assert result.execution_date == datetime.datetime(2023, 1, 3, 0, 0)
+    assert result.execution_date == datetime.datetime(2023, 1, 3, 0, 0, tzinfo=datetime.timezone.utc)
 
 
 def test_insert_new_patch_failure_type(log: logging.Logger, db_session: Session):
