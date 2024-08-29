@@ -33,7 +33,7 @@ docker-compose exec -T hwa sh -c "pip install --upgrade -r dev-requirements.txt"
 cd ..
 ```
 
-To start the project: 
+In order to run the project, which populates the HAPI database from the patches on GitHub, the environment variables `HWA_PATCH_REPO_URL`, `HWA_PATCH_BRANCH_NAME` and `HWA_PATCH_TOKEN` need to be defined. These are specified in `launch.json` for Visual Code users. `HWA_PATCH_TOKEN` should be acquired from GitHub. 
 ```shell
 cd docker
 docker-compose exec -T hwa sh -c "python start.py"
