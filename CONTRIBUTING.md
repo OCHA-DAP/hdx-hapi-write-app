@@ -60,6 +60,7 @@ docker-compose up -d
 cd ..
 ```
 
+Inside the HWA docker container it may be necessary to run `alembic upgrade head`.
 
 In order to run the project, which populates the HAPI database from the patches on GitHub, the environment variables `HWA_PATCH_REPO_URL`, `HWA_PATCH_BRANCH_NAME` and `HWA_PATCH_TOKEN` need to be defined. These are specified in `launch.json` for Visual Code users. `HWA_PATCH_TOKEN` should be acquired from GitHub. The project can be run with: 
 ```shell
