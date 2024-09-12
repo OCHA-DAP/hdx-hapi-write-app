@@ -1,7 +1,6 @@
 import unittest.mock as mock
 
-from hdx_hwa.main import process
-from hdx_hwa.main import SlackClientWrapper
+from hdx_hwa.main import PROCESS_FINISHED_MESSAGE, process, SlackClientWrapper
 from hdx_hwa.patch_repo.types import Patch
 
 
@@ -29,11 +28,12 @@ LATEST_PATCH_HASH_EXISTING = 'abcdefg'
 def test_main_new_patch(discover_patches_mock, get_latest_hash_mock, execute_patch_mock, post_to_slack_mock):
     process()
     assert post_to_slack_mock.call_count == 2
-    assert post_to_slack_mock.call_args_list[0].args[0] == \
-        f'Finished loading data for *{TARGET}* ' \
-        f'from {DISCOVERED_PATCHES[TARGET].patch_permalink_url} ' \
+    assert (
+        post_to_slack_mock.call_args_list[0].args[0] == f'Finished loading data for *{TARGET}* '
+        f'from {DISCOVERED_PATCHES[TARGET].patch_permalink_url} '
         f'and commit hash {DISCOVERED_PATCHES[TARGET].commit_hash}'
-    assert post_to_slack_mock.call_args_list[1].args[0] == 'Finished import process'
+    )
+    assert post_to_slack_mock.call_args_list[1].args[0] == PROCESS_FINISHED_MESSAGE
 
 
 @mock.patch.object(SlackClientWrapper, 'post_to_slack_channel')
@@ -42,4 +42,4 @@ def test_main_new_patch(discover_patches_mock, get_latest_hash_mock, execute_pat
 def test_main_existing_patch(discover_patches_mock, get_latest_hash_mock, post_to_slack_mock):
     process()
     assert post_to_slack_mock.call_count == 1
-    assert post_to_slack_mock.call_args_list[0].args[0] == 'Finished import process'
+    assert post_to_slack_mock.call_args_list[0].args[0] == PROCESS_FINISHED_MESSAGE

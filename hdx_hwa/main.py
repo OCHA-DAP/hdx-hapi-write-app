@@ -1,5 +1,6 @@
 import logging
 
+from hdx_hwa.config.version import HWA_VERSION
 from hdx_hwa.db.services import end_db_session, get_latest_executed_patch_hash_for_target_from_db
 
 from hdx_hwa.engine.services import execute_patch
@@ -8,6 +9,7 @@ from hdx_hwa.util.slack_wrapper import SlackClientWrapper
 from hdx_hwa.util.timer import Timer
 
 logger = logging.getLogger(__name__)
+PROCESS_FINISHED_MESSAGE = f'Finished import process (HWA version: {HWA_VERSION})'
 
 
 def process():
@@ -54,6 +56,5 @@ def process():
             finally:
                 end_db_session()
 
-    process_finished_message = 'Finished import process'
-    import_proces_timer.next(process_finished_message)
-    slack_wrapper.post_to_slack_channel(process_finished_message)
+    import_proces_timer.next(PROCESS_FINISHED_MESSAGE)
+    slack_wrapper.post_to_slack_channel(PROCESS_FINISHED_MESSAGE)
