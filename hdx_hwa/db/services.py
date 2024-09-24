@@ -31,6 +31,9 @@ from hapi_schema.db_views_as_tables import (
     DBFoodSecurityVAT,  # noqa
     DBFundingVAT,  # noqa
     DBRefugeesVAT,  # noqa
+    DBAvailabilityVAT,  # noqa
+    DBIDPsVAT,  # noqa
+    DBReturneesVAT,  # noqa
 )
 
 from hdx_hwa.db.dao.patch_dao import get_highest_sequence_number, get_last_executed_patch, insert_new_patch
