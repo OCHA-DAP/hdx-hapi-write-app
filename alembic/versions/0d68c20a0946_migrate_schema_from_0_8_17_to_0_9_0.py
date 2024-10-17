@@ -77,6 +77,8 @@ def upgrade() -> None:
     op.alter_column('conflict_event_vat', 'provider_admin1_name', server_default=None)
     op.add_column('conflict_event_vat', sa.Column('provider_admin2_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('conflict_event_vat', 'provider_admin2_name', server_default=None)
+    op.create_index(op.f('ix_conflict_event_vat_provider_admin1_name'), 'conflict_event_vat', ['provider_admin1_name'], unique=False)
+    op.create_index(op.f('ix_conflict_event_vat_provider_admin2_name'), 'conflict_event_vat', ['provider_admin2_name'], unique=False)
 
     op.add_column('food_price_vat', sa.Column('provider_admin1_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('food_price_vat', 'provider_admin1_name', server_default=None)
@@ -89,31 +91,46 @@ def upgrade() -> None:
     op.alter_column('food_security_vat', 'provider_admin1_name', server_default=None)
     op.add_column('food_security_vat', sa.Column('provider_admin2_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('food_security_vat', 'provider_admin2_name', server_default=None)
+    op.create_index(op.f('ix_food_security_vat_provider_admin1_name'), 'food_security_vat', ['provider_admin1_name'], unique=False)
+    op.create_index(op.f('ix_food_security_vat_provider_admin2_name'), 'food_security_vat', ['provider_admin2_name'], unique=False)
 
     op.add_column('humanitarian_needs_vat', sa.Column('provider_admin1_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('humanitarian_needs_vat', 'provider_admin1_name', server_default=None)
     op.add_column('humanitarian_needs_vat', sa.Column('provider_admin2_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('humanitarian_needs_vat', 'provider_admin2_name', server_default=None)
+    op.create_index(op.f('ix_humanitarian_needs_vat_provider_admin1_name'), 'humanitarian_needs_vat', ['provider_admin1_name'], unique=False)
+    op.create_index(op.f('ix_humanitarian_needs_vat_provider_admin2_name'), 'humanitarian_needs_vat', ['provider_admin2_name'], unique=False)
     
     op.add_column('idps_vat', sa.Column('provider_admin1_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('idps_vat', 'provider_admin1_name', server_default=None)
     op.add_column('idps_vat', sa.Column('provider_admin2_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('idps_vat', 'provider_admin2_name', server_default=None)
+    op.create_index(op.f('ix_idps_vat_provider_admin1_name'), 'idps_vat', ['provider_admin1_name'], unique=False)
+    op.create_index(op.f('ix_idps_vat_provider_admin2_name'), 'idps_vat', ['provider_admin2_name'], unique=False)
+    
 
     op.add_column('operational_presence_vat', sa.Column('provider_admin1_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('operational_presence_vat', 'provider_admin1_name', server_default=None)
     op.add_column('operational_presence_vat', sa.Column('provider_admin2_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('operational_presence_vat', 'provider_admin2_name', server_default=None)
+    op.create_index(op.f('ix_operation_presence_vat_provider_admin1_name'), 'operation_presence_vat', ['provider_admin1_name'], unique=False)
+    op.create_index(op.f('ix_operation_presence_vat_provider_admin2_name'), 'operation_presence_vat', ['provider_admin2_name'], unique=False)
+   
 
     op.add_column('population_vat', sa.Column('provider_admin1_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('population_vat', 'provider_admin1_name', server_default=None)
     op.add_column('population_vat', sa.Column('provider_admin2_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('population_vat', 'provider_admin2_name', server_default=None)
-    op.drop_index('ix_population_vat_reference_period_start', table_name='population_vat')
+    op.create_index(op.f('ix_population_vat_provider_admin1_name'), 'population_vat', ['provider_admin1_name'], unique=False)
+    op.create_index(op.f('ix_population_vat_provider_admin2_name'), 'population_vat', ['provider_admin2_name'], unique=False)
+  
+    
+    # op.drop_index('ix_population_vat_reference_period_start', table_name='population_vat')
 
     op.add_column('poverty_rate_vat', sa.Column('provider_admin1_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('poverty_rate_vat', 'provider_admin1_name', server_default=None)
-    op.drop_index('ix_poverty_rate_vat_admin1_name', table_name='poverty_rate_vat')
+    op.create_index(op.f('ix_poverty_rate_vat_provider_admin1_name'), 'poverty_rate_vat', ['provider_admin1_name'], unique=False)
+    # op.drop_index('ix_poverty_rate_vat_admin1_name', table_name='poverty_rate_vat')
 
     op.add_column('wfp_market_vat', sa.Column('provider_admin1_name', sa.String(length=512), nullable=False, server_default='not set'))
     op.alter_column('wfp_market_vat', 'provider_admin1_name', server_default=None)
@@ -132,13 +149,13 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_index(op.f('ix_wfp_market_vat_provider_admin2_name'), table_name='wfp_market_vat')
-    op.drop_index(op.f('ix_wfp_market_vat_provider_admin1_name'), table_name='wfp_market_vat')
+    # op.drop_index(op.f('ix_wfp_market_vat_provider_admin2_name'), table_name='wfp_market_vat')
+    # op.drop_index(op.f('ix_wfp_market_vat_provider_admin1_name'), table_name='wfp_market_vat')
     op.drop_column('wfp_market_vat', 'provider_admin2_name')
     op.drop_column('wfp_market_vat', 'provider_admin1_name')
-    op.create_index('ix_poverty_rate_vat_admin1_name', 'poverty_rate_vat', ['admin1_name'], unique=False)
+    # op.create_index('ix_poverty_rate_vat_admin1_name', 'poverty_rate_vat', ['admin1_name'], unique=False)
     op.drop_column('poverty_rate_vat', 'provider_admin1_name')
-    op.create_index('ix_population_vat_reference_period_start', 'population_vat', ['reference_period_start'], unique=False)
+    # op.create_index('ix_population_vat_reference_period_start', 'population_vat', ['reference_period_start'], unique=False)
     op.drop_column('population_vat', 'provider_admin2_name')
     op.drop_column('population_vat', 'provider_admin1_name')
     op.drop_column('operational_presence_vat', 'provider_admin2_name')
@@ -149,8 +166,8 @@ def downgrade() -> None:
     op.drop_column('humanitarian_needs_vat', 'provider_admin1_name')
     op.drop_column('food_security_vat', 'provider_admin2_name')
     op.drop_column('food_security_vat', 'provider_admin1_name')
-    op.drop_index(op.f('ix_food_price_vat_provider_admin2_name'), table_name='food_price_vat')
-    op.drop_index(op.f('ix_food_price_vat_provider_admin1_name'), table_name='food_price_vat')
+    # op.drop_index(op.f('ix_food_price_vat_provider_admin2_name'), table_name='food_price_vat')
+    # op.drop_index(op.f('ix_food_price_vat_provider_admin1_name'), table_name='food_price_vat')
     op.drop_column('food_price_vat', 'provider_admin2_name')
     op.drop_column('food_price_vat', 'provider_admin1_name')
     op.drop_column('conflict_event_vat', 'provider_admin2_name')
