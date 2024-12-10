@@ -1,1 +1,1 @@
-HWA_VERSION = '0.2.0'
+HWA_VERSION = '0.2.1'
