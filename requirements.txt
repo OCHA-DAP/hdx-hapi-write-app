@@ -3,6 +3,6 @@ psycopg2~=2.9.10
 requests~=2.32.3
 python-dateutil~=2.9.0
 slack_sdk~=3.33.3
-alembic~=1.14.00
+alembic~=1.14.0
 
 -e git+https://github.com/OCHA-DAP/hapi-sqlalchemy-schema@v0.9.10#egg=hapi-schema
