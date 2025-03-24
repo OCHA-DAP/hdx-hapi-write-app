@@ -29,7 +29,7 @@ class DataInsertionTransformer:
                 result = None
         elif type == 'DateTime':
             result = self._transform_string_to_datetime(value)
-        elif type == 'Integer':
+        elif type == 'Integer' or type == 'Decimal':
             if len(value) == 0:
                 result = None  # Empty string should be treated as NULL for integer columns
 
