@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 # for postgres: numeric and decimal are synonims
-NUMERIC_TYPES = {'Integer', 'Decimal', 'Numeric'}
+NUMERIC_TYPES = {'Integer', 'Decimal', 'Numeric', 'Float'}
 
 
 class DataInsertionTransformer:
