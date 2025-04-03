@@ -2,7 +2,7 @@ python-json-logger~=3.3.0
 psycopg2~=2.9.10
 requests~=2.32.3
 python-dateutil~=2.9.0
-slack_sdk~=3.34.0
+slack_sdk~=3.35.0
 alembic~=1.15.1
 
 -e git+https://github.com/OCHA-DAP/hapi-sqlalchemy-schema@v0.9.14#egg=hapi-schema
