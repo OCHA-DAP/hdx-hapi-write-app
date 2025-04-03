@@ -26,6 +26,8 @@ def upgrade() -> None:
             nullable=True)
     op.alter_column('wfp_market_vat', 'lat', existing_type=sa.Float, nullable=True)
     op.alter_column('wfp_market_vat', 'lon', existing_type=sa.Float, nullable=True)
+    op.alter_column('food_price_vat', 'lat', existing_type=sa.Float, nullable=True)
+    op.alter_column('food_price_vat', 'lon', existing_type=sa.Float, nullable=True)
     # ### end Alembic commands ###
 
 def downgrade() -> None:
@@ -36,4 +38,6 @@ def downgrade() -> None:
             nullable=True)
     op.alter_column('wfp_market_vat', 'lat', existing_type=sa.Float, nullable=False)
     op.alter_column('wfp_market_vat', 'lon', existing_type=sa.Float, nullable=False)
+    op.alter_column('food_price_vat', 'lat', existing_type=sa.Float, nullable=False)
+    op.alter_column('food_price_vat', 'lon', existing_type=sa.Float, nullable=False)
     # ### end Alembic commands ###
