@@ -12,7 +12,7 @@ jobs:
 
       - name: Install ruff linter
         run: |
-          pip install ruff
+          pip install -r dev-requirements.txt
       
       - name: Run the linter
         run: |

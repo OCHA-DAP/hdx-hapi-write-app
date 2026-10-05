@@ -21,9 +21,10 @@ jobs:
       - name: Install requirements
         run: |
           cd docker
-          docker compose exec -T hwa sh -c "apk add git"
+          docker compose exec -T hwa sh -c "apk add --virtual .ci-build-deps git build-base"
           docker compose exec -T hwa sh -c "pip install --upgrade -r requirements.txt"
           docker compose exec -T hwa sh -c "pip install --upgrade -r dev-requirements.txt"
+          docker compose exec -T hwa sh -c "apk del .ci-build-deps"
 
       - name: Setup database
         run: |
