@@ -139,7 +139,7 @@ cd ..
 
 ## Changing the Dockerfile
 
-CI and the local setup both run the published `:main` image, so CI doesn't build or test a `Dockerfile` change on a branch. `build.yml` first builds it when the change reaches `main`, and pushes it as `:main` straight away. To test it before merging, build the image from the repo root:
+CI (`run-tests.yml`) builds the image from the branch's `Dockerfile` and runs the tests in it, but doesn't push it. `build.yml` first pushes it when the change reaches `main`, as `:main` straight away. The local setup runs the published `:main` image, so to test a `Dockerfile` change locally, build the image from the repo root:
 
 ```shell
 docker build -t public.ecr.aws/unocha/hdx-hapi-write-app:local .
@@ -175,7 +175,7 @@ Instead of building locally, you can run the **Create image** workflow (`build.y
 
 ## Continuous integration
 
-- `run-tests.yml` runs on every push. It does the setup and tests above in the published `:main` image with `docker compose`, and uploads coverage to Codecov. It doesn't build the `Dockerfile` (see [Changing the Dockerfile](#changing-the-dockerfile)).
+- `run-tests.yml` runs on every push. It builds the image from the branch's `Dockerfile` (tagged `:ci` on the runner, never pushed), does the setup and tests above in it with `docker compose`, and uploads coverage to Codecov (see [Changing the Dockerfile](#changing-the-dockerfile)).
 - `run-linter.yml` runs on every push. It installs `dev-requirements.txt` and runs `ruff check`.
 - `build.yml` builds and pushes the image on pushes to `dev`, `main` and `prod` (tagged with the branch name), on tags (tagged with the tag), and on manual runs (tagged with the commit SHA).
 - The tests need the `HWA_PATCH_TOKEN` secret. Workflows triggered by Dependabot don't get Actions secrets, so set it both under **Settings → Secrets and variables → Actions** and under **Settings → Secrets and variables → Dependabot**.

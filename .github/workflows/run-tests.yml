@@ -5,6 +5,9 @@ on: [push]
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      # Run tests against an image built from this branch's Dockerfile, not the published :main one
+      HWA_IMAGE_TAG: ci
     steps:
 
       - name: Checkout code
@@ -12,6 +15,7 @@ jobs:
 
       - name: Build the docker compose stack
         run: |
+          docker build -t public.ecr.aws/unocha/hdx-hapi-write-app:$HWA_IMAGE_TAG .
           docker network create -d bridge hapi_stack_hapi
           cd docker
           docker compose --profile=testing up -d
