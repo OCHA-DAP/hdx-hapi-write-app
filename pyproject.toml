@@ -2,6 +2,7 @@
 extend-exclude = [
     "./alembic",
     "./src",
+    "*.md",
 ]
 
 # Allow lines to be as long as 120 characters.

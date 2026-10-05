@@ -4,20 +4,23 @@
     ],
     "[python]": {
         "editor.formatOnSave": true,
-        "editor.defaultFormatter": "charliermarsh.ruff"
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit"
+        }
     },
-    "ruff.enable": true,
     "ruff.importStrategy": "fromEnvironment",
-    "ruff.lint.args": [
-        "--config=pyproject.toml", 
-    ],
-    "ruff.format.args": [
-        "--config=pyproject.toml",
-    ],
     "python.analysis.autoImportCompletions": true,
+    "python.analysis.typeCheckingMode": "standard",
+    "python.analysis.diagnosticMode": "workspace",
+    "python.analysis.exclude": [
+        "src/",
+        "**/__pycache__",
+        "**/.*"
+    ],
     "python.testing.pytestArgs": [
         "tests"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
+    "python.testing.pytestEnabled": true
 }
